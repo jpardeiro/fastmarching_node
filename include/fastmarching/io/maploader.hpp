@@ -25,7 +25,7 @@
 
 #include "../ndgridmap/ndgridmap.hpp"
 
-#include "../thirdparty/CImg.h"
+#include <CImg.h>
 
 using namespace cimg_library;
 

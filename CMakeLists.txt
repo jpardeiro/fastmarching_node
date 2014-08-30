@@ -60,6 +60,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   dims.msg
+  InitAndGoal.msg
   map.msg
   pathFM.msg
   pathTurtlebot.msg
@@ -106,7 +107,6 @@ add_executable (fm2 src/fm2.cpp
 # Linking CImg dependencies.
 target_link_libraries (fm2 X11 pthread ${catkin_LIBRARIES})
 
-
 add_executable (fm2star src/fm2star.cpp
                     include/fastmarching/console/console.cpp
                     include/fastmarching/ndgridmap/cell.cpp
@@ -115,7 +115,6 @@ add_executable (fm2star src/fm2star.cpp
 
 # Linking CImg dependencies.
 target_link_libraries (fm2star X11 pthread ${catkin_LIBRARIES})
-
 
 add_executable (fm2directional src/fm2directional.cpp
                     include/fastmarching/console/console.cpp

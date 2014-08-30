@@ -11,19 +11,14 @@
 #include "../include/fastmarching/console/console.h"
 #include "../include/fastmarching/fmm/fastmarching.hpp"
 #include "../include/fastmarching/fm2directional/fm2directional.hpp"
-#include "../include/fastmarching/fmdata/fmfibheap.hpp"
-#include "../include/fastmarching/fmdata/fmpriorityqueue.hpp"
 #include "../include/fastmarching/fmdata/fmdaryheap.hpp"
-#include "../include/fastmarching/fmdata/fmdaryheap.hpp"
-#include "../include/fastmarching/io/maploader.hpp"
 #include "../include/fastmarching/io/gridplotter.hpp"
-#include "../include/fastmarching/io/gridwriter.hpp"
-#include "../include/fastmarching/io/gridpoints.hpp"
 
 #include <sstream>
 #include "fastmarching/map.h"
 #include "fastmarching/pathFM.h"
 #include "fastmarching/dims.h"
+#include "fastmarching/InitAndGoal.h"
 
 fastmarching::map occ;
 
@@ -31,6 +26,10 @@ int row;
 int col;
 int ndims;
 float resolution = -1;
+
+bool enable_points = false;
+int init = 0;
+int goal = 0;
 
 void chatterCallback_occupancy(const fastmarching::map::ConstPtr &msg)
 {
@@ -40,16 +39,24 @@ void chatterCallback_occupancy(const fastmarching::map::ConstPtr &msg)
     ndims = msg -> ndims;
 }
 
+void chatterCallback_points(const fastmarching::InitAndGoal::ConstPtr &msg)
+{
+    enable_points = msg -> enable;
+    init = msg -> init;
+    goal = msg -> goal;
+}
+
 int main(int argc, char **argv)
 {
 
-  ros::init(argc, argv, "FM2_Path_Planner");
+  ros::init(argc, argv, "FM2_Directional_Path_Planner");
 
   bool enable_fm = true;
 
   ros::NodeHandle n;
 
   ros::Subscriber sub = n.subscribe("map_FM", 1000, chatterCallback_occupancy);
+  ros::Subscriber sub_points = n.subscribe("Init_and_Goal_Points", 1000, chatterCallback_points);
 
   ros::Publisher path_pub = n.advertise<fastmarching::pathFM>("path_FM", 1000);
 
@@ -58,7 +65,7 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
 
-    if (resolution != -1 && enable_fm)
+    if (resolution != -1 && enable_fm && enable_points)
     {
         fastmarching::pathFM pathFM;
         constexpr int ndims_ = 2;
@@ -84,29 +91,20 @@ int main(int argc, char **argv)
         grid.setLeafSize(resolution);
 
         std::vector<int> init_point;
-
-        std::array<int, ndims_> coords_init, coords_goal;
-        GridPoints::selectMapPoints(grid, coords_init, coords_goal);
-
-        int idx, goal;
-        grid.coord2idx(coords_init, idx);
-        init_point.push_back(idx);
-        grid.coord2idx(coords_goal, goal);
+        init_point.push_back(init);
 
         typedef typename std::vector< std::array<double, ndims_> > Path; // A bit of short-hand.
         Path path;
 
         std::vector <double> path_velocity; // Velocity of the path
 
-        FastMarching2Directional< nDGridMap<FMDirectionalCell, ndims_>, Path > fm2directional;
+        FastMarching2Directional< nDGridMap<FMDirectionalCell, ndims_> > fm2directional;
 
         fm2directional.setEnvironment(&grid);
         fm2directional.setInitialAndGoalPoints(init_point, fm2_sources, goal);
-        fm2directional.computeFM2Directional(true);
+        fm2directional.computeFM2Directional();
 
         fm2directional.computePath(&path, &path_velocity);
-
-        GridPlotter::plotMapPath(grid,path);
 
         for (int i = 0; i < (int)path_velocity.size(); i++)
         {
@@ -127,16 +125,12 @@ int main(int argc, char **argv)
 
         enable_fm = false;
 
+        GridPlotter::plotMapPath(grid,path);
+
     }
     ros::spinOnce();
     seconds_sleep.sleep();
   }
-  /**
-   * ros::spin() will enter a loop, pumping callbacks.  With this version, all
-   * callbacks will be called from within this thread (the main one).  ros::spin()
-   * will exit when Ctrl-C is pressed, or the node is shutdown by the master.
-   */
-
 
   return 0;
 }
