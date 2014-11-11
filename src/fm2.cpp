@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
         fm2.computePath(&path, &path_velocity);
 
-        for (int i = (int)path_velocity.size()-1; i > 0; i--)
+        for (int i = 0; i < (int)path_velocity.size(); i++)
         {
             fastmarching::dims dims;
 
