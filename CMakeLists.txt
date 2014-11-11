@@ -75,6 +75,15 @@ generate_messages(
 # External dependencies
 include_directories (~/boost_1_55_0 ${catkin_INCLUDE_DIRS})
 
+# Self-made includes
+include_directories (${FMM_SOURCE_DIR}/console)
+include_directories (${FMM_SOURCE_DIR}/ndgridmap)
+include_directories (${FMM_SOURCE_DIR}/fmm)
+include_directories (${FMM_SOURCE_DIR}/fmm/fmdata) 
+include_directories (${FMM_SOURCE_DIR}/fm2)
+include_directories (${FMM_SOURCE_DIR}/io)
+include_directories (${FMM_SOURCE_DIR}/gradientdescent)
+
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -101,7 +110,7 @@ catkin_package(
 add_executable (fm2 src/fm2.cpp
                     include/fastmarching/console/console.cpp
                     include/fastmarching/ndgridmap/cell.cpp
-                    include/fastmarching/fmdata/fmcell.cpp
+                    include/fastmarching/fmm/fmdata/fmcell.cpp
                     )
 
 # Linking CImg dependencies.
@@ -110,7 +119,7 @@ target_link_libraries (fm2 X11 pthread ${catkin_LIBRARIES})
 add_executable (fm2star src/fm2star.cpp
                     include/fastmarching/console/console.cpp
                     include/fastmarching/ndgridmap/cell.cpp
-                    include/fastmarching/fmdata/fmcell.cpp
+                    include/fastmarching/fmm/fmdata/fmcell.cpp
                     )
 
 # Linking CImg dependencies.
@@ -119,7 +128,7 @@ target_link_libraries (fm2star X11 pthread ${catkin_LIBRARIES})
 add_executable (fm2directional src/fm2directional.cpp
                     include/fastmarching/console/console.cpp
                     include/fastmarching/ndgridmap/cell.cpp
-                    include/fastmarching/fmdata/fmcell.cpp
+                    include/fastmarching/fmm/fmdata/fmcell.cpp
                     )
 
 # Linking CImg dependencies.

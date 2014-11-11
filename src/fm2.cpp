@@ -6,12 +6,11 @@
 #include <string>
 #include <algorithm>
 
-#include "../include/fastmarching/fmdata/fmcell.h"
+#include "../include/fastmarching/fmm/fmdata/fmcell.h"
 #include "../include/fastmarching/ndgridmap/ndgridmap.hpp"
 #include "../include/fastmarching/console/console.h"
-#include "../include/fastmarching/fmm/fastmarching.hpp"
-#include "../include/fastmarching/fm2/fm2.hpp"
-#include "../include/fastmarching/fmdata/fmdaryheap.hpp"
+#include "../include/fastmarching/fm2/fastmarching2.hpp"
+#include "../include/fastmarching/fmm/fmdata/fmdaryheap.hpp"
 #include "../include/fastmarching/io/gridplotter.hpp"
 
 #include <sstream>
